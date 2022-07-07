@@ -217,7 +217,8 @@ class TestProtocol(ProtocolTestCase):
         await self._execute('CREATE GLOBAL state_desc_1 -> int32')
         sdd1 = await self.con.recv_match(
             protocol.StateDataDescription,
-            # typedesc_id=b'\t\x99\xfc\x0f\xc5\x14\x8e\x8b^Z`\x05+\xf5p|',
+            typedesc_id=b'\xc7\xd0\xd4\x95\x11\xc5\xc8'
+                        b'\x01ZL\xf7I\xf0\xcb\xd6\x1d'
         )
         await self.con.recv_match(protocol.CommandComplete)
         await self.con.recv_match(protocol.ReadyForCommand)
@@ -249,13 +250,12 @@ class TestProtocol(ProtocolTestCase):
         await self._execute('CREATE GLOBAL state_desc_2 -> int32', cc=cc1)
         sdd2 = await self.con.recv_match(
             protocol.StateDataDescription,
-            # typedesc_id=b'\xc2\x8b# \xc0\x05\xac
-            # \x10\x9b\xc4\x01\xaf\xff\xcd0m'
+            typedesc_id=b'\x94%f\x8d\xa2XP\xdb\xe4\xc2\x0bgD\xd6\xd6\x01',
         )
         cc2_1 = await self.con.recv_match(
             protocol.CommandComplete,
             state_typedesc_id=sdd2.typedesc_id,
-            # state_data=cc1.state_data,
+            state_data=cc1.state_data,
         )
         await self.con.recv_match(protocol.ReadyForCommand)
 
@@ -302,8 +302,6 @@ class TestProtocol(ProtocolTestCase):
             state_data=cc1.state_data,
         )
         await self.con.recv_match(protocol.ReadyForCommand)
-
-        return
 
         # New transaction
         await self._execute('START TRANSACTION', cc=cc1)
